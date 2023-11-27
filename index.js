@@ -1,4 +1,6 @@
 const express = require('express');
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
+const axios = require('axios');
 const app = express();
 const cors = require('cors');
 // const jwt = require('jsonwebtoken');
@@ -7,11 +9,11 @@ const cors = require('cors');
 
 const port = process.env.PORT || 5000;
 
-// middleware
+// ---------------middleware--------------
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.swu9d.mongodb.net/?retryWrites=true&w=majority`;
 const uri = "mongodb+srv://assingment12:SVsv9NOeUpkGIidY@cluster0.bpfhrgu.mongodb.net/?retryWrites=true&w=majority";
 
@@ -31,7 +33,7 @@ async function run() {
 // -------------connect  bd--------------
 const productCollection = client.db("tech").collection("product");
 const cartCollection=client.db("tech").collection("carts");
-// -----------product-----------
+// -----------  product -----------
 app.get('/product',async (req,res) => {
    const result = await productCollection.find().toArray();
     res.send(result);
@@ -53,7 +55,7 @@ app.get('/carts',async (req,res) => {
 
 app.delete('/carts/:id', async (req, res) => {
   const id = req.params.id;
-  const query = { _id: new ObjectId(id) }
+  const query = {_id: new ObjectId(id)}
   const result = await cartCollection.deleteOne(query);
   res.send(result);
 });
