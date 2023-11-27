@@ -28,16 +28,38 @@ async function run() {
   try {
   
 
-// -------------connet  bd--------------
+// -------------connect  bd--------------
 const productCollection = client.db("tech").collection("product");
+const cartCollection=client.db("tech").collection("carts");
 // -----------product-----------
-app.get('/product',  async (req,res) => {
+app.get('/product',async (req,res) => {
    const result = await productCollection.find().toArray();
     res.send(result);
   
   });
+
+// -----------------cart collection--------------
+app.post('/carts', async (req, res) => {
+  const cartItem = req.body;
+  const result = await cartCollection.insertOne(cartItem);
+  res.send(result);
+});
+// -----------get cart-----
+app.get('/carts',async (req,res) => {
+  const result = await productCollection.find().toArray();
+   res.send(result);
+ 
+ });
+
+app.delete('/carts/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) }
+  const result = await cartCollection.deleteOne(query);
+  res.send(result);
+});
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     
