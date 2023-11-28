@@ -1,10 +1,10 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
-const axios = require('axios');
+// const axios = require('axios');
 const app = express();
 const cors = require('cors');
 // const jwt = require('jsonwebtoken');
-// require('dotenv').config();
+ require('dotenv').config();
 // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const port = process.env.PORT || 5000;
@@ -12,20 +12,24 @@ const port = process.env.PORT || 5000;
 // ---------------middleware--------------
 app.use(cors());
 app.use(express.json());
-
-
+// 5jGfXyoPOlyhPqTg
+const uri = "mongodb+srv://assingment12:57XBCL4ql0uKw9O5@cluster0.bpfhrgu.mongodb.net/?retryWrites=true&w=majority";
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.swu9d.mongodb.net/?retryWrites=true&w=majority`;
-const uri = "mongodb+srv://assingment12:SVsv9NOeUpkGIidY@cluster0.bpfhrgu.mongodb.net/?retryWrites=true&w=majority";
+// const uri = "mongodb+srv://tech12:5jGfXyoPOlyhPqTg@cluster0.ptcqcbq.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
   }
+})
+client.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
 });
-
 async function run() {
   try {
   
@@ -47,11 +51,11 @@ app.post('/carts', async (req, res) => {
   res.send(result);
 });
 // -----------get cart-----
-app.get('/carts',async (req,res) => {
-  const result = await productCollection.find().toArray();
-   res.send(result);
+// app.get('/carts',async (req,res) => {
+//   const result = await productCollection.find().toArray();
+//    res.send(result);
  
- });
+//  });
 
 app.delete('/carts/:id', async (req, res) => {
   const id = req.params.id;
