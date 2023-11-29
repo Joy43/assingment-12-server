@@ -36,6 +36,7 @@ async function run() {
 
 // -------------connect  bd--------------
 const productCollection = client.db("tech").collection("product");
+const homeproductCollection = client.db("tech").collection("homeproduct");
 const cartCollection=client.db("tech").collection("carts");
 const userCollection=client.db("tech").collection("users");
 
@@ -77,27 +78,26 @@ const userCollection=client.db("tech").collection("users");
 
  
 // ----------------------get user--------------------
- app.get('/users/admin/:email',verifyAdmin, async (req, res) => {
-      const email = req.params.email;
-
-      if (email !== req.decoded.email) {
-        return res.status(403).send({ message: 'forbidden access' })
-      }
-
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      let admin = false;
-      if (user) {
-        admin = user?.role === 'admin';
-      }
-      res.send({ admin });
-    })
-
-app.get('/users',async(req,res)=>{
+app.get('/users',verifyToken,verifyAdmin,async(req,res)=>{
   const result=await userCollection.find().toArray();
   res.send(result);
 })
 
+app.get('/users/admin/:email', verifyToken, async (req, res) => {
+  const email = req.params.email;
+
+  if (email !== req.decoded.email) {
+    return res.status(403).send({ message: 'forbidden access' })
+  }
+
+  const query = { email: email };
+  const user = await userCollection.findOne(query);
+  let admin = false;
+  if (user) {
+    admin = user?.role === 'admin';
+  }
+  res.send({ admin });
+})
 // --------post user------
 app.post('/users', async (req, res) => {
   const user = req.body;
@@ -133,14 +133,36 @@ app.post('/users', async (req, res) => {
     })
     
 
-// -----------  product -----------
-app.get('/product',async (req,res) => {
-   const result = await productCollection.find().toArray();
-    res.send(result);
-  
-  });
+    //---------------------------- search option -----------------------------
 
-// -----------------cart collection--------------
+
+
+// -----------------------------------  product & SEARCH-------------------------------------
+app.get('/product', async (req, res) => {
+  try {
+    const search = req.query.search || ''; // Get search query from request
+
+    // Use a regular expression for case-insensitive search
+    const regex = new RegExp(search, 'i');
+
+    const result = await productCollection.find({ title: regex }).toArray();
+    res.send(result);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
+  //---------------home product------------
+  app.get('/homeproduct',async (req,res) => {
+    const result = await homeproductCollection.find().toArray();
+     res.send(result);
+   
+   });
+// -------------------------------cart collection-------------------------------------
  // carts collection
  app.get('/carts', async (req, res) => {
   const email = req.query.email;
