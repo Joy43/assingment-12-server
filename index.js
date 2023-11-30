@@ -12,10 +12,10 @@ const port = process.env.PORT || 5000;
 // ---------------middleware--------------
 app.use(cors());
 app.use(express.json());
-// 5jGfXyoPOlyhPqTg
+
 const uri = "mongodb+srv://assingment12:57XBCL4ql0uKw9O5@cluster0.bpfhrgu.mongodb.net/?retryWrites=true&w=majority";
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.swu9d.mongodb.net/?retryWrites=true&w=majority`;
-// const uri = "mongodb+srv://tech12:5jGfXyoPOlyhPqTg@cluster0.ptcqcbq.mongodb.net/?retryWrites=true&w=majority";
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -150,8 +150,17 @@ app.get('/product', async (req, res) => {
   res.send(result);
 });
 
-
-
+app.get('/product/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) }
+  const result = await productCollection.findOne(query);
+  res.send(result);
+})
+app.post('/product', verifyToken, verifyAdmin, async (req, res) => {
+  const item = req.body;
+  const result = await menuCollection.insertOne(item);
+  res.send(result);
+})
 
   //---------------home product------------
   app.get('/homeproduct',async (req,res) => {
@@ -160,7 +169,7 @@ app.get('/product', async (req, res) => {
    
    });
 // -------------------------------cart collection-------------------------------------
- // carts collection
+ // ---------------carts collection-------------------
  app.get('/carts', async (req, res) => {
   const email = req.query.email;
   const query = { email: email };
@@ -176,7 +185,7 @@ app.post('/carts', async (req, res) => {
 
 app.delete('/carts/:id', async (req, res) => {
   const id = req.params.id;
-  const query = { _id: new ObjectId(id) }
+  const query = {_id: new ObjectId(id) }
   const result = await cartCollection.deleteOne(query);
   res.send(result);
 })
