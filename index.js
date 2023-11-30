@@ -158,16 +158,44 @@ app.get('/product/:id', async (req, res) => {
 })
 app.post('/product', verifyToken, verifyAdmin, async (req, res) => {
   const item = req.body;
-  const result = await menuCollection.insertOne(item);
+  const result = await productCollection.insertOne(item);
   res.send(result);
 })
 
+app.patch('/product/:id', async (req, res) => {
+  const item = req.body;
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) }
+  const updatedDoc = {
+    $set: {
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      recipe: item.recipe,
+      image: item.image
+    }
+  }
+
+  const result = await productCollection.updateOne(filter, updatedDoc)
+  res.send(result);
+})
+
+  //  --------------delete------
+  app.delete('/product/:id', verifyToken, verifyAdmin, async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await productCollection.deleteOne(query);
+    res.send(result);
+  })
+  
   //---------------home product------------
   app.get('/homeproduct',async (req,res) => {
     const result = await homeproductCollection.find().toArray();
      res.send(result);
    
    });
+
+
 // -------------------------------cart collection-------------------------------------
  // ---------------carts collection-------------------
  app.get('/carts', async (req, res) => {
