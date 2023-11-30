@@ -139,18 +139,15 @@ app.post('/users', async (req, res) => {
 
 // -----------------------------------  product & SEARCH-------------------------------------
 app.get('/product', async (req, res) => {
-  try {
-    const search = req.query.search || ''; // Get search query from request
+  const filter = req.query; // Assuming you're getting the filter from the query parameters
 
-    // Use a regular expression for case-insensitive search
-    const regex = new RegExp(search, 'i');
+  const query = {
+    name: { $regex: filter.search, $options: 'i' }
+  };
 
-    const result = await productCollection.find({ title: regex }).toArray();
-    res.send(result);
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+  const cursor = productCollection.find(query);
+  const result = await cursor.toArray();
+  res.send(result);
 });
 
 
