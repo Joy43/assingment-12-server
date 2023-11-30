@@ -132,11 +132,6 @@ app.post('/users', async (req, res) => {
       res.send(result);
     })
     
-
-    //---------------------------- search option -----------------------------
-
-
-
 // -----------------------------------  product & SEARCH-------------------------------------
 app.get('/product', async (req, res) => {
   const filter = req.query; // Assuming you're getting the filter from the query parameters
@@ -156,7 +151,7 @@ app.get('/product/:id', async (req, res) => {
   const result = await productCollection.findOne(query);
   res.send(result);
 })
-app.post('/product', verifyToken, verifyAdmin, async (req, res) => {
+app.post('/product',  async (req, res) => {
   const item = req.body;
   const result = await productCollection.insertOne(item);
   res.send(result);
@@ -171,7 +166,7 @@ app.patch('/product/:id', async (req, res) => {
       name: item.name,
       category: item.category,
       price: item.price,
-      recipe: item.recipe,
+      itemproduct: item.itemproduct,
       image: item.image
     }
   }
@@ -187,7 +182,7 @@ app.patch('/product/:id', async (req, res) => {
     const result = await productCollection.deleteOne(query);
     res.send(result);
   })
-  
+
   //---------------home product------------
   app.get('/homeproduct',async (req,res) => {
     const result = await homeproductCollection.find().toArray();
