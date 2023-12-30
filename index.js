@@ -39,6 +39,7 @@ const productCollection = client.db("tech").collection("product");
 const homeproductCollection = client.db("tech").collection("homeproduct");
 const cartCollection=client.db("tech").collection("carts");
 const userCollection=client.db("tech").collection("users");
+const paymentCollection = client.db("tech").collection("payments");
 
 
  // -----------jwt related api---------------
@@ -257,6 +258,32 @@ app.post('/payments', async (req, res) => {
 
   res.send({ paymentResult, deleteResult });
 })
+
+// ----------------analities ----------------
+
+app.get('/admin-status',verifyAdmin,verifyToken, async(req,res)=>{
+  const users =await  userCollection.estimatedDocumentCount();
+  const menuItems = await productCollection.estimatedDocumentCount();
+  const orders = await paymentCollection.estimatedDocumentCount();
+
+  const result =await paymentCollection.aggregate([
+  {
+    $group:{
+      _id:null,
+      totalRevenue:{
+        $sum:'$price',
+      }
+    }
+  }
+]).toArray();
+const revenue=result.length>0?result[0].totalRevenue:0;
+
+  res.send({
+    users,menuItems,orders,revenue
+  })
+
+})
+
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
