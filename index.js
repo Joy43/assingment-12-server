@@ -261,7 +261,7 @@ app.post('/payments', async (req, res) => {
 
 // ----------------analities ----------------
 
-app.get('/admin-status',verifyAdmin,verifyToken, async(req,res)=>{
+app.get('/admin-status',async(req,res)=>{
   const users =await  userCollection.estimatedDocumentCount();
   const menuItems = await productCollection.estimatedDocumentCount();
   const orders = await paymentCollection.estimatedDocumentCount();
@@ -289,7 +289,7 @@ const revenue=result.length>0?result[0].totalRevenue:0;
     // await client.db("admin").command({ ping: 1 });
      console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    
+
   }
 }
 run().catch(console.dir);
